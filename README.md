@@ -14,4 +14,5 @@
 
 **MENGGUNAKAN API**
 GET Daftar RSUD yang telah di merge http://localhost:8000/api/merge-api-rsud
+GET Daftar RSUD dengan Filter http://localhost:8000/api/merge-api-rsud?organisasi_id={organisasi_id}
 

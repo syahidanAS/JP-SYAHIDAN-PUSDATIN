@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use GuzzleHttp\Client;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 
 class RsudController extends Controller
 {
@@ -14,7 +15,7 @@ class RsudController extends Controller
         $this->client = new Client();
     }
 
-    public function index()
+    public function index(Request $request)
     {
         try {
             $connected_medfac_ihs =  env('CONNECTED_MEDICAL_FACILITY_IHS');
@@ -55,6 +56,14 @@ class RsudController extends Controller
                     return $item;
                 })
                 ->toArray();
+
+
+            $organisasi_id = $request->organisasi_id;
+            if ($organisasi_id) {
+                $merged_with_summary = Arr::where($merged_with_summary, function ($value, $key) use ($organisasi_id) {
+                    return $value['organisasi_id'] == $organisasi_id;
+                });
+            }
 
             return response()->json([
                 'status' => true,
