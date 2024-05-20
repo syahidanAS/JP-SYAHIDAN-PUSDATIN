@@ -41,12 +41,25 @@ class RsudController extends Controller
             })->filter(function ($item) {
                 // Menyaring data yang hanya memiliki email dan kelas_rs yang cocok saja
                 return isset($item['email']) && isset($item['kelas_rs']);
-            })
+            })->toArray();
+
+            // Merge SUMMARY TOTAL PENGIRIMAN
+            $total_pengiriman = collect(json_decode($response_of_ihs_transaction, true));
+            $merged_with_summary = collect($result)
+                ->map(function ($item) use ($total_pengiriman) {
+                    $organisasi_id = $item['organisasi_id'];
+                    $total = $total_pengiriman->where('organisasi_id', $organisasi_id)->all();
+                    if (!empty($total)) {
+                        $item['jumlah_pengiriman_data'] = $total;
+                    }
+                    return $item;
+                })
                 ->toArray();
+
             return response()->json([
                 'status' => true,
                 'code' => 200,
-                'data' => $result
+                'data' => $merged_with_summary
             ], 200);
         } catch (\Exception $error) {
             response()->json([
